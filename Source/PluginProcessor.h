@@ -89,15 +89,12 @@ private:
                 initialise([](float x) { return std::sin(x); });
                 break;
             case SynthAudioProcessor::Waveform::Sawtooth:
-                // Update the waveform function for Sawtooth
                 initialise([](float x) { return x / juce::MathConstants<float>::pi; });
                 break;
             case SynthAudioProcessor::Waveform::Square:
-                // Update the waveform function for Square
                 initialise([](float x) { return (x < 0.0f) ? -1.0f : 1.0f; });
                 break;
             case SynthAudioProcessor::Waveform::Noise:
-                // Update the waveform function for Noise
                 initialise([](float) { return juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f; });
                 break;
             }
@@ -110,15 +107,12 @@ private:
     {
         Dynamic_Oscillator oscillator;
         juce::dsp::Gain<float> gain;
-        int noteNumber = -1; // The note number associated with this voice
+        int noteNumber = -1;
     };
 
-    // Declare an array to manage active voices
     static constexpr int MaxPolyphony = 16;
     std::array<Voice, MaxPolyphony> voices;
 
-
-    //SineOscillator osc;
     juce::dsp::Gain<float> gain;
     std::map<int, float> activeNotes;
 

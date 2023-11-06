@@ -108,8 +108,7 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     {
         Voice& voice = voices[i];
 
-        // Initialize the oscillator and gain for this voice
-        voice.oscillator.prepare(spec); // Use the spec from prepareToPlay
+        voice.oscillator.prepare(spec);
         voice.gain.prepare(spec);
         voice.gain.setGainLinear(0.5f);
     }
@@ -159,7 +158,6 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
 
     juce::dsp::AudioBlock<float> audioBlock{ buffer };
 
-    // Process MIDI messages
     juce::MidiBuffer::Iterator it(midiMessages);
     juce::MidiMessage message;
     int samplePosition;
@@ -215,12 +213,12 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
         }
     }
 
-    // Process active notes
-/*    audioBlock.clear(); // Clear the audio block
+
+/*    audioBlock.clear(); 
 
     for (const auto& note : activeNotes)
     {
-        osc.setFrequency(note.second); // Set the oscillator frequency for the active note
+        osc.setFrequency(note.second); 
         osc.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
     }
 

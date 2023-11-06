@@ -18,12 +18,10 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     setSize(400, 300);
 
     addAndMakeVisible(waveformToggleButton);
-    waveformToggleButton.setButtonText("Sine"); // Set the initial text
+    waveformToggleButton.setButtonText("Sine");
 
-    // Add a listener to the toggle button to handle changes
     waveformToggleButton.onClick = [this]
     {
-        // Cycle through the waveforms
         switch (audioProcessor.getSelectedWaveform())
         {
         case SynthAudioProcessor::Waveform::Sine:
