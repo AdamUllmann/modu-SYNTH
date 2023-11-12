@@ -72,6 +72,27 @@ public:
         return selectedWaveform;
     }
 
+    void setAttackTime(float newValue) {
+        for (auto& voice : voices) {
+            voice.voiceEnvelope.setParameters({ newValue, voice.voiceEnvelope.getParameters().decay, voice.voiceEnvelope.getParameters().sustain, voice.voiceEnvelope.getParameters().release });
+        }
+    }
+    void setDecayTime(float newValue) {
+        for (auto& voice : voices) {
+            voice.voiceEnvelope.setParameters({ voice.voiceEnvelope.getParameters().attack, newValue, voice.voiceEnvelope.getParameters().sustain, voice.voiceEnvelope.getParameters().release });
+        }
+    }
+    void setSustainLevel(float newValue) {
+        for (auto& voice : voices) {
+            voice.voiceEnvelope.setParameters({ voice.voiceEnvelope.getParameters().attack, voice.voiceEnvelope.getParameters().decay, newValue, voice.voiceEnvelope.getParameters().release });
+        }
+    }
+    void setReleaseTime(float newValue) {
+        for (auto& voice : voices) {
+            voice.voiceEnvelope.setParameters({ voice.voiceEnvelope.getParameters().attack, voice.voiceEnvelope.getParameters().decay, voice.voiceEnvelope.getParameters().sustain, newValue });
+        }
+    }
+
 private:
 
     Waveform selectedWaveform = Waveform::Sine;
@@ -116,7 +137,7 @@ private:
         Voice::Voice() : noteNumber(-1)
         {
             voiceEnvelope.setParameters(juce::ADSR::Parameters{
-                0.1f, 2.0f, 0.0f, 0.6f }
+                0.01f, 0.0f, 1.0f, 0.01f }
             );
             isActive = false;
 

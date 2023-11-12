@@ -47,6 +47,21 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     waveformLabel.setText("Waveform:", juce::dontSendNotification);
     waveformLabel.attachToComponent(&waveformToggleButton, true);
 
+    setupSliderWithLabel(attackSlider, attackLabel, "Attack", juce::Slider::LinearVertical);
+    setupSliderWithLabel(decaySlider, decayLabel, "Decay", juce::Slider::LinearVertical);
+    setupSliderWithLabel(sustainSlider, sustainLabel, "Sustain", juce::Slider::LinearVertical);
+    setupSliderWithLabel(releaseSlider, releaseLabel, "Release", juce::Slider::LinearVertical);
+
+    attackSlider.setRange(0.001, 5.0, 0.01);
+    decaySlider.setRange(0.0, 5.0, 0.01);
+    sustainSlider.setRange(0.0, 1.0, 0.01);
+    releaseSlider.setRange(0.001, 5.0, 0.01);
+
+    attackSlider.onValueChange = [this] { audioProcessor.setAttackTime(attackSlider.getValue()); };
+    decaySlider.onValueChange = [this] { audioProcessor.setDecayTime(decaySlider.getValue()); };
+    sustainSlider.onValueChange = [this] { audioProcessor.setSustainLevel(sustainSlider.getValue()); };
+    releaseSlider.onValueChange = [this] { audioProcessor.setReleaseTime(releaseSlider.getValue()); };
+
 }
 
 SynthAudioProcessorEditor::~SynthAudioProcessorEditor()
@@ -90,4 +105,47 @@ void SynthAudioProcessorEditor::resized()
 
     waveformToggleButton.setToggleState(false, juce::NotificationType::dontSendNotification);
 
+    int sliderWidth = 50;
+    int sliderHeight = 100;
+    int sliderStartX = 140;
+    int sliderSpacing = 60;
+
+    attackSlider.setBounds(sliderStartX, 190, sliderWidth, sliderHeight);
+    decaySlider.setBounds(sliderStartX + sliderSpacing, 190, sliderWidth, sliderHeight);
+    sustainSlider.setBounds(sliderStartX + 2 * sliderSpacing, 190, sliderWidth, sliderHeight);
+    releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 190, sliderWidth, sliderHeight);
+
+}
+
+//=======================================================================================================
+
+void SynthAudioProcessorEditor::setupSliderWithLabel(juce::Slider& slider, juce::Label& label, const juce::String& labelText, juce::Slider::SliderStyle style)
+{
+    addAndMakeVisible(slider);
+    slider.setSliderStyle(style);
+    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+
+    addAndMakeVisible(label);
+    label.setText(labelText, juce::dontSendNotification);
+    label.attachToComponent(&slider, false);
+}
+
+void SynthAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
+{
+    if (slider == &attackSlider)
+    {
+        audioProcessor.setAttackTime(attackSlider.getValue());
+    }
+    else if (slider == &decaySlider)
+    {
+        audioProcessor.setDecayTime(decaySlider.getValue());
+    }
+    else if (slider == &sustainSlider)
+    {
+        audioProcessor.setSustainLevel(sustainSlider.getValue());
+    }
+    else if (slider == &releaseSlider)
+    {
+        audioProcessor.setReleaseTime(releaseSlider.getValue());
+    }
 }
