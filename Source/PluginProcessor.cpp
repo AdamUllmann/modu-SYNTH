@@ -19,9 +19,12 @@ SynthAudioProcessor::SynthAudioProcessor()
 #endif
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    )
+    ),
+    parameters(*this, nullptr, "Parameters", createParams())
 #endif
 {
+    
+
 }
 
 SynthAudioProcessor::~SynthAudioProcessor()
@@ -110,7 +113,7 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
         voice.oscillator.prepare(spec);
         voice.gain.prepare(spec);
-        voice.gain.setGainLinear(1.0f);
+        voice.gain.setGainLinear(0.5f);
     }
 }
 
@@ -235,8 +238,15 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
             voice.gain.process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
             voice.voiceEnvelope.applyEnvelopeToBuffer(tempBuffer, 0, tempBuffer.getNumSamples());
 
+            for (int channel = 0; channel < tempBuffer.getNumChannels(); ++channel) {
+                auto* channelData = tempBuffer.getWritePointer(channel);
+                for (int sample = 0; sample < tempBuffer.getNumSamples(); ++sample) {
+                    channelData[sample] *= outputVolume;
+                }
+            }
+
             for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-                buffer.addFrom(channel, 0, tempBuffer, channel, 0, buffer.getNumSamples());
+                buffer.addFrom(channel, 0, tempBuffer, channel, 0, buffer.getNumSamples(), outputVolume);
             }
 
             if (!voice.voiceEnvelope.isActive()) {
@@ -266,12 +276,25 @@ void SynthAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+    auto state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
+
 }
 
 void SynthAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    if (xmlState != nullptr) {
+        if (xmlState->hasTagName(parameters.state.getType())) {
+            parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+        }
+    }
+
 }
 
 //==============================================================================
@@ -279,4 +302,19 @@ void SynthAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SynthAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout SynthAudioProcessor::createParams() {
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("attack", "Attack", juce::NormalisableRange<float>(0.001f, 5.0f, 0.01f), 0.001f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("decay", "Decay", juce::NormalisableRange<float>(0.0f, 5.0f, 0.01f), 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("sustain", "Sustain", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("release", "Release", juce::NormalisableRange<float>(0.001f, 5.0f, 0.01f), 0.001f));
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("volume", "Volume", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.7f));
+
+    params.push_back(std::make_unique<juce::AudioParameterInt>("waveform", "Waveform", 0, 3, 0));
+
+    return { params.begin(), params.end() };
 }

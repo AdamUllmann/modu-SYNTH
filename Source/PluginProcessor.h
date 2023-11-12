@@ -93,7 +93,19 @@ public:
         }
     }
 
+    juce::AudioProcessorValueTreeState& getParameters()
+    {
+        return parameters;
+    }
+
+    float outputVolume = 0.7f;
+
+    juce::AudioProcessorValueTreeState parameters;
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParams();
+    
 private:
+
+    
 
     Waveform selectedWaveform = Waveform::Sine;
 
@@ -147,10 +159,7 @@ private:
     static constexpr int MaxPolyphony = 64;
     std::array<Voice, MaxPolyphony> voices;
 
-    //juce::dsp::Gain<float> gain;
-    //std::map<int, float> activeNotes;
-
-
+    
 
     //==============================================================================
 

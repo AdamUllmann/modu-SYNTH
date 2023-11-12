@@ -42,10 +42,12 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
             break;
         }
     };
-
+    
     addAndMakeVisible(waveformLabel);
     waveformLabel.setText("Waveform:", juce::dontSendNotification);
     waveformLabel.attachToComponent(&waveformToggleButton, true);
+
+    waveformAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.getParameters(), "waveform", waveformToggleButton);
 
     setupSliderWithLabel(attackSlider, attackLabel, "Attack", juce::Slider::LinearVertical);
     setupSliderWithLabel(decaySlider, decayLabel, "Decay", juce::Slider::LinearVertical);
@@ -62,6 +64,23 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     sustainSlider.onValueChange = [this] { audioProcessor.setSustainLevel(sustainSlider.getValue()); };
     releaseSlider.onValueChange = [this] { audioProcessor.setReleaseTime(releaseSlider.getValue()); };
 
+    attackAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "attack", attackSlider);
+    decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "decay", decaySlider);
+    sustainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "sustain", sustainSlider);
+    releaseAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "release", releaseSlider);
+
+    volumeSlider.setSliderStyle(juce::Slider::Rotary);
+    volumeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    volumeSlider.setRange(0.0, 1.0, 0.01);
+    volumeSlider.setValue(audioProcessor.outputVolume);
+    volumeSlider.onValueChange = [this] { audioProcessor.outputVolume = volumeSlider.getValue(); };
+    addAndMakeVisible(volumeSlider);
+
+    volumeLabel.setText("Volume", juce::dontSendNotification);
+    volumeLabel.attachToComponent(&volumeSlider, false);
+    addAndMakeVisible(volumeLabel);
+
+    volumeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "volume", volumeSlider);
 }
 
 SynthAudioProcessorEditor::~SynthAudioProcessorEditor()
@@ -114,6 +133,11 @@ void SynthAudioProcessorEditor::resized()
     decaySlider.setBounds(sliderStartX + sliderSpacing, 190, sliderWidth, sliderHeight);
     sustainSlider.setBounds(sliderStartX + 2 * sliderSpacing, 190, sliderWidth, sliderHeight);
     releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 190, sliderWidth, sliderHeight);
+
+    int sliderDiameter = 50;
+    int labelHeight = 20;
+    volumeSlider.setBounds(getWidth() - sliderDiameter - 10, 10, sliderDiameter, sliderDiameter);
+    volumeLabel.setBounds(getWidth() - sliderDiameter - 10, 10 + sliderDiameter, sliderDiameter, labelHeight);
 
 }
 
