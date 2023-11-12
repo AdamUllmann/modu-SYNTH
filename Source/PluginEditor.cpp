@@ -67,7 +67,7 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     juce::Rectangle<int> bounds = getLocalBounds();
 
     juce::Colour modernColor(0x3355FF50);
-
+    
     g.setColour(modernColor);
     g.fillRect(bounds);
 
@@ -76,7 +76,7 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawRoundedRectangle(roundedRect, 15.0f, 2.0f);
 
     g.setColour(juce::Colours::white);
-    g.drawText("Modu-Synth", bounds, juce::Justification::centred, true);
+    g.drawText("Modu-SYNTH", bounds, juce::Justification::centred, true);
 }
 
 void SynthAudioProcessorEditor::resized()

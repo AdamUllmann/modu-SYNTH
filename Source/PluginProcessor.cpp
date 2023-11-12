@@ -99,10 +99,10 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     spec.numChannels = getTotalNumOutputChannels();
 
     //osc.prepare(spec);
-    gain.prepare(spec);
+    //gain.prepare(spec);
 
     //osc.setFrequency(440.0f);
-    gain.setGainLinear(0.5f);
+    //gain.setGainLinear(0.5f);
 
     for (int i = 0; i < MaxPolyphony; ++i)
     {
@@ -110,7 +110,7 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
         voice.oscillator.prepare(spec);
         voice.gain.prepare(spec);
-        voice.gain.setGainLinear(0.5f);
+        voice.gain.setGainLinear(1.0f);
     }
 }
 
@@ -161,39 +161,62 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
     juce::MidiBuffer::Iterator it(midiMessages);
     juce::MidiMessage message;
     int samplePosition;
+    static unsigned int nextActivationOrder = 1;
+    static unsigned int nextVoiceIndex = 0;
 
-    while (it.getNextEvent(message, samplePosition))
-    {
+    buffer.clear();
 
-        if (message.isNoteOn())
-        {
+    juce::AudioBuffer<float> tempBuffer;
+    tempBuffer.setSize(buffer.getNumChannels(), buffer.getNumSamples(), false, false, true);
+
+    while (it.getNextEvent(message, samplePosition)) {
+        if (message.isNoteOn()) {
             int noteNumber = message.getNoteNumber();
             int velocity = message.getVelocity();
 
-            float frequency = 440.0 * pow(2.0, (noteNumber - 69) / 12.0);
+            float frequency = juce::MidiMessage::getMidiNoteInHertz(noteNumber);
 
-            for (int i = 0; i < MaxPolyphony; ++i)
-            {
-                if (voices[i].noteNumber == -1)
-                {
-                    Voice& voice = voices[i];
-                    voice.noteNumber = noteNumber;
-                    voice.oscillator.setFrequency(frequency);
-                    voice.gain.setGainLinear(velocity / 127.0f);
+            Voice* voiceToUse = nullptr;
+
+
+            for (unsigned int i = 0; i < MaxPolyphony; ++i) {
+                auto& voice = voices[(nextVoiceIndex + i) % MaxPolyphony];
+                if (!voice.isActive) {
+                    voiceToUse = &voice;
+                    nextVoiceIndex = (nextVoiceIndex + i + 1) % MaxPolyphony;
                     break;
                 }
             }
+
+            if (!voiceToUse) {
+                unsigned int oldestOrder = nextActivationOrder;
+                for (auto& voice : voices) {
+                    if (voice.activationOrder < oldestOrder) {
+                        oldestOrder = voice.activationOrder;
+                        voiceToUse = &voice;
+                        //break;
+                    }
+                }
+                if (voiceToUse) {
+                    voiceToUse->voiceEnvelope.reset();
+                }
+            }
+
+            if (voiceToUse) {
+                voiceToUse->activationOrder = nextActivationOrder++;
+                voiceToUse->noteNumber = noteNumber;
+                voiceToUse->isActive = true;
+                voiceToUse->oscillator.setFrequency(frequency);
+                voiceToUse->gain.setGainLinear(velocity / 127.0f);
+                voiceToUse->voiceEnvelope.noteOn();
+            }
         }
-        else if (message.isNoteOff())
-        {
+        else if (message.isNoteOff()) {
             int noteNumber = message.getNoteNumber();
 
-            for (int i = 0; i < MaxPolyphony; ++i)
-            {
-                if (voices[i].noteNumber == noteNumber)
-                {
-                    voices[i].noteNumber = -1;
-                    break;
+            for (auto& voice : voices) {
+                if (voice.isActive && voice.noteNumber == noteNumber) {
+                    voice.voiceEnvelope.noteOff();
                 }
             }
         }
@@ -203,28 +226,28 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
     {
         Voice& voice = voices[i];
 
-        if (voice.noteNumber != -1)
+        if (voice.isActive)
         {
-            //voice.oscillator.setFrequency(voice.oscillator.getFrequency());
+            tempBuffer.clear();
 
-            juce::dsp::AudioBlock<float> voiceBlock(audioBlock);
+            juce::dsp::AudioBlock<float> voiceBlock(tempBuffer);
             voice.oscillator.process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
             voice.gain.process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
+            voice.voiceEnvelope.applyEnvelopeToBuffer(tempBuffer, 0, tempBuffer.getNumSamples());
+
+            for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+                buffer.addFrom(channel, 0, tempBuffer, channel, 0, buffer.getNumSamples());
+            }
+
+            if (!voice.voiceEnvelope.isActive()) {
+                voice.isActive = false;
+            }
         }
     }
-
-
-/*    audioBlock.clear(); 
-
-    for (const auto& note : activeNotes)
-    {
-        osc.setFrequency(note.second); 
-        osc.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
-    }
-
-    gain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
-    */
 }
+
+
+
 
 //==============================================================================
 bool SynthAudioProcessor::hasEditor() const

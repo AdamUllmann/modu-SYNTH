@@ -108,13 +108,26 @@ private:
         Dynamic_Oscillator oscillator;
         juce::dsp::Gain<float> gain;
         int noteNumber = -1;
+        bool isActive;
+        unsigned int activationOrder = 0;
+
+        juce::ADSR voiceEnvelope;
+
+        Voice::Voice() : noteNumber(-1)
+        {
+            voiceEnvelope.setParameters(juce::ADSR::Parameters{
+                0.1f, 2.0f, 0.0f, 0.6f }
+            );
+            isActive = false;
+
+        }
     };
 
-    static constexpr int MaxPolyphony = 16;
+    static constexpr int MaxPolyphony = 64;
     std::array<Voice, MaxPolyphony> voices;
 
-    juce::dsp::Gain<float> gain;
-    std::map<int, float> activeNotes;
+    //juce::dsp::Gain<float> gain;
+    //std::map<int, float> activeNotes;
 
 
 
