@@ -314,7 +314,5 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthAudioProcessor::createP
 
     params.push_back(std::make_unique<juce::AudioParameterFloat>("volume", "Volume", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.7f));
 
-    params.push_back(std::make_unique<juce::AudioParameterInt>("waveform", "Waveform", 0, 3, 0));
-
     return { params.begin(), params.end() };
 }

@@ -15,7 +15,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(400, 300);
+    setSize(400, 400);
 
     addAndMakeVisible(waveformToggleButton);
     waveformToggleButton.setButtonText("Sine");
@@ -69,7 +69,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     sustainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "sustain", sustainSlider);
     releaseAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "release", releaseSlider);
 
-    volumeSlider.setSliderStyle(juce::Slider::Rotary);
+    volumeSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     volumeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(audioProcessor.outputVolume);
@@ -81,6 +81,8 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     addAndMakeVisible(volumeLabel);
 
     volumeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "volume", volumeSlider);
+
+
 }
 
 SynthAudioProcessorEditor::~SynthAudioProcessorEditor()
@@ -118,26 +120,26 @@ void SynthAudioProcessorEditor::resized()
     const int buttonWidth = 100;
     const int buttonHeight = 30;
 
-    waveformToggleButton.setBounds(120, 190, buttonWidth, buttonHeight);
+    waveformToggleButton.setBounds(120, 50, buttonWidth, buttonHeight);
 
-    waveformLabel.setBounds(120, 170, getWidth() - 20, 20);
+    waveformLabel.setBounds(120, 30, getWidth() - 20, 20);
 
-    waveformToggleButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    //waveformToggleButton.setToggleState(false, juce::NotificationType::dontSendNotification);
 
     int sliderWidth = 50;
     int sliderHeight = 100;
-    int sliderStartX = 140;
+    int sliderStartX = 85;
     int sliderSpacing = 60;
 
-    attackSlider.setBounds(sliderStartX, 190, sliderWidth, sliderHeight);
-    decaySlider.setBounds(sliderStartX + sliderSpacing, 190, sliderWidth, sliderHeight);
-    sustainSlider.setBounds(sliderStartX + 2 * sliderSpacing, 190, sliderWidth, sliderHeight);
-    releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 190, sliderWidth, sliderHeight);
+    attackSlider.setBounds(sliderStartX, 250, sliderWidth, sliderHeight);
+    decaySlider.setBounds(sliderStartX + sliderSpacing, 250, sliderWidth, sliderHeight);
+    sustainSlider.setBounds(sliderStartX + 2 * sliderSpacing, 250, sliderWidth, sliderHeight);
+    releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 250, sliderWidth, sliderHeight);
 
     int sliderDiameter = 50;
     int labelHeight = 20;
-    volumeSlider.setBounds(getWidth() - sliderDiameter - 10, 10, sliderDiameter, sliderDiameter);
-    volumeLabel.setBounds(getWidth() - sliderDiameter - 10, 10 + sliderDiameter, sliderDiameter, labelHeight);
+    volumeSlider.setBounds(getWidth() - sliderDiameter - 18, 20, sliderDiameter, sliderDiameter);
+    volumeLabel.setBounds(getWidth() - sliderDiameter - 18, 20 + sliderDiameter, sliderDiameter, labelHeight);
 
 }
 
