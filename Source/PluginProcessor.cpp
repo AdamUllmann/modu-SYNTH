@@ -111,7 +111,9 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     {
         Voice& voice = voices[i];
 
-        voice.oscillator.prepare(spec);
+        for (auto& osc : voice.oscillator) {
+                osc.prepare(spec);
+            }
         voice.gain.prepare(spec);
         voice.gain.setGainLinear(0.5f);
     }
@@ -209,7 +211,10 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
                 voiceToUse->activationOrder = nextActivationOrder++;
                 voiceToUse->noteNumber = noteNumber;
                 voiceToUse->isActive = true;
-                voiceToUse->oscillator.setFrequency(frequency);
+                for (int u = 0; u < 5; ++u) {
+                    float detune = (u - (5 / 2)) * 1.5;
+                    voiceToUse->oscillator[u].setFrequency(frequency + detune);
+                }
                 voiceToUse->gain.setGainLinear(velocity / 127.0f);
                 voiceToUse->voiceEnvelope.noteOn();
             }
@@ -234,7 +239,9 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
             tempBuffer.clear();
 
             juce::dsp::AudioBlock<float> voiceBlock(tempBuffer);
-            voice.oscillator.process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
+            for (int u = 0; u < 5; ++u) {   //change 5 in this line
+                voice.oscillator[u].process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
+            }
             voice.gain.process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
             voice.voiceEnvelope.applyEnvelopeToBuffer(tempBuffer, 0, tempBuffer.getNumSamples());
 
@@ -313,6 +320,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthAudioProcessor::createP
     params.push_back(std::make_unique<juce::AudioParameterFloat>("release", "Release", juce::NormalisableRange<float>(0.001f, 5.0f, 0.01f), 0.001f));
 
     params.push_back(std::make_unique<juce::AudioParameterFloat>("volume", "Volume", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.7f));
+
+    params.push_back(std::make_unique<juce::AudioParameterInt>("unisonCount", "Unison Count", 1, 8, 1));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("detuneAmount", "Detune Amount", 0.0f, 50.0f, 0.0f));
 
     return { params.begin(), params.end() };
 }

@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 
+const int MaxUnison = 16;
 //==============================================================================
 /**
 */
@@ -63,7 +64,9 @@ public:
         selectedWaveform = newWaveform;
         for (int i = 0; i < MaxPolyphony; ++i)
         {
-            voices[i].oscillator.setWaveform(selectedWaveform);
+            for (auto& osc : voices[i].oscillator) {
+                osc.setWaveform(selectedWaveform);
+            }
         }
     }
 
@@ -138,7 +141,7 @@ private:
 
     struct Voice
     {
-        Dynamic_Oscillator oscillator;
+        Dynamic_Oscillator oscillator[MaxUnison];  // max unison is 16
         juce::dsp::Gain<float> gain;
         int noteNumber = -1;
         bool isActive;
