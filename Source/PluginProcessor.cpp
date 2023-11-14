@@ -110,10 +110,11 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     for (int i = 0; i < MaxPolyphony; ++i)
     {
         Voice& voice = voices[i];
-
-        for (auto& osc : voice.oscillator) {
+        for (int j = 0; j < 3; j++) {
+            for (auto& osc : voice.oscillators[j].oscillator) {
                 osc.prepare(spec);
             }
+        }
         voice.gain.prepare(spec);
         voice.gain.setGainLinear(0.5f);
     }
@@ -211,9 +212,11 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
                 voiceToUse->activationOrder = nextActivationOrder++;
                 voiceToUse->noteNumber = noteNumber;
                 voiceToUse->isActive = true;
-                for (int u = 0; u < 5; ++u) {
-                    float detune = (u - (5 / 2)) * 1.5;
-                    voiceToUse->oscillator[u].setFrequency(frequency + detune);
+                for (int i = 0; i < 3; i++) {
+                    for (int u = 0; u < voiceToUse->oscillators[i].unison; ++u) {
+                        float detune = (u - (voiceToUse->oscillators[i].unison / 2)) * voiceToUse->oscillators[i].detune;
+                        voiceToUse->oscillators[i].oscillator[u].setFrequency(frequency + detune);
+                    }
                 }
                 voiceToUse->gain.setGainLinear(velocity / 127.0f);
                 voiceToUse->voiceEnvelope.noteOn();
@@ -239,8 +242,10 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
             tempBuffer.clear();
 
             juce::dsp::AudioBlock<float> voiceBlock(tempBuffer);
-            for (int u = 0; u < 5; ++u) {   //change 5 in this line
-                voice.oscillator[u].process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
+            for (int i = 0; i < 3; i++) {
+                for (int u = 0; u < voice.oscillators[i].unison; ++u) {
+                    voice.oscillators[i].oscillator[u].process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
+                }
             }
             voice.gain.process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));
             voice.voiceEnvelope.applyEnvelopeToBuffer(tempBuffer, 0, tempBuffer.getNumSamples());

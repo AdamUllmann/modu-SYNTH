@@ -22,30 +22,91 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 
     waveformToggleButton.onClick = [this]
     {
-        switch (audioProcessor.getSelectedWaveform())
+        switch (audioProcessor.getSelectedWaveform(0))
         {
         case SynthAudioProcessor::Waveform::Sine:
-            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sawtooth);
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sawtooth, 0);
             waveformToggleButton.setButtonText("Sawtooth");
             break;
         case SynthAudioProcessor::Waveform::Sawtooth:
-            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Square);
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Square, 0);
             waveformToggleButton.setButtonText("Square");
             break;
         case SynthAudioProcessor::Waveform::Square:
-            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Noise);
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Noise, 0);
             waveformToggleButton.setButtonText("Noise");
             break;
         case SynthAudioProcessor::Waveform::Noise:
-            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sine);
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sine, 0);
             waveformToggleButton.setButtonText("Sine");
             break;
         }
     };
     
     addAndMakeVisible(waveformLabel);
-    waveformLabel.setText("Waveform:", juce::dontSendNotification);
+    waveformLabel.setText("Osc 1 Waveform:", juce::dontSendNotification);
     waveformLabel.attachToComponent(&waveformToggleButton, true);
+
+
+    addAndMakeVisible(waveformToggleButton2);
+    waveformToggleButton2.setButtonText("Sine");
+
+    waveformToggleButton2.onClick = [this] { 
+        switch (audioProcessor.getSelectedWaveform(1))
+            {
+            case SynthAudioProcessor::Waveform::Sine:
+                 audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sawtooth, 1);
+                waveformToggleButton2.setButtonText("Sawtooth");
+                break;
+            case SynthAudioProcessor::Waveform::Sawtooth:
+                audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Square, 1);
+                waveformToggleButton2.setButtonText("Square");
+                break;
+            case SynthAudioProcessor::Waveform::Square:
+                audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Noise, 1);
+                waveformToggleButton2.setButtonText("Noise");
+                break;
+            case SynthAudioProcessor::Waveform::Noise:
+                audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sine, 1);
+                waveformToggleButton2.setButtonText("Sine");
+                break;
+            }
+    };
+
+    addAndMakeVisible(waveformLabel2);
+    waveformLabel2.setText("Osc 2 Waveform:", juce::dontSendNotification);
+    waveformLabel2.attachToComponent(&waveformToggleButton2, true);
+
+
+    addAndMakeVisible(waveformToggleButton3);
+    waveformToggleButton3.setButtonText("Sine");
+
+    waveformToggleButton3.onClick = [this] { 
+        switch (audioProcessor.getSelectedWaveform(2))
+        {
+        case SynthAudioProcessor::Waveform::Sine:
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sawtooth, 2);
+            waveformToggleButton3.setButtonText("Sawtooth");
+            break;
+        case SynthAudioProcessor::Waveform::Sawtooth:
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Square, 2);
+            waveformToggleButton3.setButtonText("Square");
+            break;
+        case SynthAudioProcessor::Waveform::Square:
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Noise, 2);
+            waveformToggleButton3.setButtonText("Noise");
+            break;
+        case SynthAudioProcessor::Waveform::Noise:
+            audioProcessor.setWaveform(SynthAudioProcessor::Waveform::Sine, 2);
+            waveformToggleButton3.setButtonText("Sine");
+            break;
+        }
+    };
+
+    addAndMakeVisible(waveformLabel3);
+    waveformLabel3.setText("Osc 3 Waveform:", juce::dontSendNotification);
+    waveformLabel3.attachToComponent(&waveformToggleButton3, true);
+
 
     waveformAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.getParameters(), "waveform", waveformToggleButton);
 
@@ -121,8 +182,13 @@ void SynthAudioProcessorEditor::resized()
     const int buttonHeight = 30;
 
     waveformToggleButton.setBounds(120, 50, buttonWidth, buttonHeight);
-
     waveformLabel.setBounds(120, 30, getWidth() - 20, 20);
+
+    waveformToggleButton2.setBounds(120, 70, buttonWidth, buttonHeight);
+    waveformLabel2.setBounds(120, 50, getWidth() - 20, 20);
+
+    waveformToggleButton3.setBounds(120, 90, buttonWidth, buttonHeight);
+    waveformLabel3.setBounds(120, 70, getWidth() - 20, 20);
 
     //waveformToggleButton.setToggleState(false, juce::NotificationType::dontSendNotification);
 

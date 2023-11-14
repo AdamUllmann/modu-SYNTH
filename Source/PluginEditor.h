@@ -34,8 +34,16 @@ private:
     SynthAudioProcessor& audioProcessor;
     juce::ToggleButton waveformToggleButton;
     juce::Label waveformLabel;
+    
+    juce::ToggleButton waveformToggleButton2;
+    juce::Label waveformLabel2;
+
+    juce::ToggleButton waveformToggleButton3;
+    juce::Label waveformLabel3;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment2;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment3;
 
     juce::Slider attackSlider, decaySlider, sustainSlider, releaseSlider;
     juce::Label attackLabel, decayLabel, sustainLabel, releaseLabel;
@@ -52,7 +60,7 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
 
-
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthAudioProcessorEditor)
 };

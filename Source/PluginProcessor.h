@@ -59,20 +59,15 @@ public:
 
     enum class Waveform { Sine, Sawtooth, Square, Noise };
 
-    void setWaveform(Waveform newWaveform)
-    {
-        selectedWaveform = newWaveform;
-        for (int i = 0; i < MaxPolyphony; ++i)
-        {
-            for (auto& osc : voices[i].oscillator) {
-                osc.setWaveform(selectedWaveform);
-            }
+    void setWaveform(Waveform newWaveform, int oscillatorIndex) {
+        for (int i = 0; i < MaxPolyphony; ++i) {
+            voices[i].setWaveform(newWaveform, oscillatorIndex);
         }
     }
 
-    Waveform getSelectedWaveform() const
+    Waveform getSelectedWaveform(int oscillatorIndex) const
     {
-        return selectedWaveform;
+        return voices[0].oscillators[oscillatorIndex].waveform;
     }
 
     void setAttackTime(float newValue) {
@@ -103,45 +98,26 @@ public:
 
     float outputVolume = 0.7f;
 
+    //Waveform selectedWaveform = Waveform::Sine;
+
     juce::AudioProcessorValueTreeState parameters;
     static juce::AudioProcessorValueTreeState::ParameterLayout createParams();
     
 private:
 
     
-
-    Waveform selectedWaveform = Waveform::Sine;
-
-    class Dynamic_Oscillator : public juce::dsp::Oscillator<float>
-    {
-    public:
-        Dynamic_Oscillator() : juce::dsp::Oscillator<float>([](float x) { return std::sin(x); }) {}
-
-        void setWaveform(SynthAudioProcessor::Waveform waveform)
-        {
-            switch (waveform)
-            {
-            case SynthAudioProcessor::Waveform::Sine:
-                initialise([](float x) { return std::sin(x); });
-                break;
-            case SynthAudioProcessor::Waveform::Sawtooth:
-                initialise([](float x) { return x / juce::MathConstants<float>::pi; });
-                break;
-            case SynthAudioProcessor::Waveform::Square:
-                initialise([](float x) { return (x < 0.0f) ? -1.0f : 1.0f; });
-                break;
-            case SynthAudioProcessor::Waveform::Noise:
-                initialise([](float) { return juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f; });
-                break;
-            }
-        }
+    struct User_oscillator {
+        juce::dsp::Oscillator<float> oscillator[MaxUnison];
+        float volume = 0.7f;
+        float tuning = 1.0f;
+        float detune = 1.2f;
+        int unison = 5;
+        Waveform waveform = Waveform::Sine;
     };
+    
 
-    //juce::dsp::Oscillator<float> osc{ [](float x) { return std::sin(x); } };
-
-    struct Voice
-    {
-        Dynamic_Oscillator oscillator[MaxUnison];  // max unison is 16
+    struct Voice {
+        User_oscillator oscillators[3];    // the 3 oscillators that the user sees
         juce::dsp::Gain<float> gain;
         int noteNumber = -1;
         bool isActive;
@@ -149,13 +125,37 @@ private:
 
         juce::ADSR voiceEnvelope;
 
-        Voice::Voice() : noteNumber(-1)
-        {
+        Voice::Voice() : noteNumber(-1) {
             voiceEnvelope.setParameters(juce::ADSR::Parameters{
                 0.01f, 0.0f, 1.0f, 0.01f }
             );
             isActive = false;
 
+            for (int i = 0; i < 3; i++) {
+                for (auto& osc : oscillators[i].oscillator) {
+                    osc.initialise([](float x) { return std::sin(x); });
+                }
+            }
+        }
+
+        void setWaveform(SynthAudioProcessor::Waveform waveform, int oscillatorIndex) {
+            oscillators[oscillatorIndex].waveform = waveform;
+                for (auto& osc : oscillators[oscillatorIndex].oscillator) {
+                    switch (waveform) {
+                    case SynthAudioProcessor::Waveform::Sine:
+                        osc.initialise([](float x) { return std::sin(x); });
+                        break;
+                    case SynthAudioProcessor::Waveform::Sawtooth:
+                        osc.initialise([](float x) { return x / juce::MathConstants<float>::pi; });
+                        break;
+                    case SynthAudioProcessor::Waveform::Square:
+                        osc.initialise([](float x) { return (x < 0.0f) ? -1.0f : 1.0f; });
+                        break;
+                    case SynthAudioProcessor::Waveform::Noise:
+                        osc.initialise([](float) { return juce::Random::getSystemRandom().nextFloat() * 2.0f - 1.0f; });
+                        break;
+                    }
+                }
         }
     };
 
