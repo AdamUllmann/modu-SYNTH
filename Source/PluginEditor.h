@@ -77,5 +77,7 @@ private:
     juce::Label unisonLabel;
     juce::Label detuneLabel;
 
+    juce::Slider volumeSlider1, volumeSlider2, volumeSlider3;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthAudioProcessorEditor)
 };
