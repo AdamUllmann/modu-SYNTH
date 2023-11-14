@@ -91,6 +91,18 @@ public:
         }
     }
 
+    void SynthAudioProcessor::setUnisonCount(int oscillatorIndex, int unisonCount) {
+        for (auto& voice : voices) {
+            voice.oscillators[oscillatorIndex].unison = unisonCount;
+        }
+    }
+
+    void SynthAudioProcessor::setDetuneAmount(int oscillatorIndex, float detuneAmount) {
+        for (auto& voice : voices) {
+            voice.oscillators[oscillatorIndex].detune = detuneAmount;
+        }
+    }
+
     juce::AudioProcessorValueTreeState& getParameters()
     {
         return parameters;
@@ -110,8 +122,8 @@ private:
         juce::dsp::Oscillator<float> oscillator[MaxUnison];
         float volume = 0.7f;
         float tuning = 1.0f;
-        float detune = 1.2f;
-        int unison = 5;
+        float detune = 1.0f;
+        int unison = 1;
         Waveform waveform = Waveform::Sine;
     };
     

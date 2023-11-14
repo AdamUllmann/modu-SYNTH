@@ -214,6 +214,7 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
                 voiceToUse->isActive = true;
                 for (int i = 0; i < 3; i++) {
                     for (int u = 0; u < voiceToUse->oscillators[i].unison; ++u) {
+                        voiceToUse->oscillators[i].oscillator[u].reset();
                         float detune = (u - (voiceToUse->oscillators[i].unison / 2)) * voiceToUse->oscillators[i].detune;
                         voiceToUse->oscillators[i].oscillator[u].setFrequency(frequency + detune);
                     }
@@ -326,8 +327,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthAudioProcessor::createP
 
     params.push_back(std::make_unique<juce::AudioParameterFloat>("volume", "Volume", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.7f));
 
-    params.push_back(std::make_unique<juce::AudioParameterInt>("unisonCount", "Unison Count", 1, 8, 1));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("detuneAmount", "Detune Amount", 0.0f, 50.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterInt>("unisonCount", "Unison Count", 1, 16, 1));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("detuneAmount", "Detune Amount", 0.0f, 5.0f, 0.01f));
+
+    juce::StringArray waveformChoices = { "Sine", "Sawtooth", "Square", "Noise" };
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("osc1Waveform", "Oscillator 1 Waveform", waveformChoices, 0));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("osc2Waveform", "Oscillator 2 Waveform", waveformChoices, 0));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("osc3Waveform", "Oscillator 3 Waveform", waveformChoices, 0));
+
+    for (int i = 1; i <= 3; ++i) {
+        params.push_back(std::make_unique<juce::AudioParameterInt>("unison" + std::to_string(i), "Unison " + std::to_string(i), 1, 16, 5));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>("detune" + std::to_string(i), "Detune " + std::to_string(i), 0.0f, 5.0f, 0.5f));
+    }
 
     return { params.begin(), params.end() };
 }

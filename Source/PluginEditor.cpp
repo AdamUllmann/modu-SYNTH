@@ -15,7 +15,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize(400, 400);
+    setSize(600, 500);
 
     addAndMakeVisible(waveformToggleButton);
     waveformToggleButton.setButtonText("Sine");
@@ -109,6 +109,8 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 
 
     waveformAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.getParameters(), "waveform", waveformToggleButton);
+    waveform2Attachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.getParameters(), "waveform", waveformToggleButton2);
+    waveform3Attachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.getParameters(), "waveform", waveformToggleButton3);
 
     setupSliderWithLabel(attackSlider, attackLabel, "Attack", juce::Slider::LinearVertical);
     setupSliderWithLabel(decaySlider, decayLabel, "Decay", juce::Slider::LinearVertical);
@@ -144,6 +146,93 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     volumeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "volume", volumeSlider);
 
 
+    unisonSlider1.setRange(1, 16, 1);
+    unisonSlider1.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    unisonSlider1.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 15, 15);
+    addAndMakeVisible(unisonSlider1);
+
+    detuneSlider1.setRange(0.0, 5.0, 0.01);
+    detuneSlider1.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    detuneSlider1.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 30, 15);
+    addAndMakeVisible(detuneSlider1);
+
+    unisonSlider2.setRange(1, 16, 1);
+    unisonSlider2.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    unisonSlider2.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 15, 15);
+    addAndMakeVisible(unisonSlider2);
+
+    detuneSlider2.setRange(0.0, 5.0, 0.01);
+    detuneSlider2.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    detuneSlider2.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 30, 15);
+    addAndMakeVisible(detuneSlider2);
+
+    unisonSlider3.setRange(1, 16, 1);
+    unisonSlider3.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    unisonSlider3.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 15, 15);
+    addAndMakeVisible(unisonSlider3);
+
+    detuneSlider3.setRange(0.0, 5.0, 0.01);
+    detuneSlider3.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    detuneSlider3.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 30, 15);
+    addAndMakeVisible(detuneSlider3);
+
+    unisonSlider1.onValueChange = [this] { 
+        audioProcessor.setUnisonCount(0, unisonSlider1.getValue());
+        //unisonValueLabel1.setText(juce::String(unisonSlider1.getValue()), juce::dontSendNotification);
+    };
+    detuneSlider1.onValueChange = [this] { 
+        audioProcessor.setDetuneAmount(0, detuneSlider1.getValue());
+        //detuneValueLabel1.setText(juce::String(unisonSlider1.getValue()), juce::dontSendNotification);
+    };
+
+    unisonSlider2.onValueChange = [this] { 
+        audioProcessor.setUnisonCount(1, unisonSlider2.getValue());
+        //unisonValueLabel2.setText(juce::String(unisonSlider1.getValue()), juce::dontSendNotification);
+    };
+    detuneSlider2.onValueChange = [this] { 
+        audioProcessor.setDetuneAmount(1, detuneSlider2.getValue()); 
+        //detuneValueLabel2.setText(juce::String(unisonSlider1.getValue()), juce::dontSendNotification);
+    };
+
+    unisonSlider3.onValueChange = [this] { 
+        audioProcessor.setUnisonCount(2, unisonSlider3.getValue()); 
+        //unisonValueLabel3.setText(juce::String(unisonSlider1.getValue()), juce::dontSendNotification);
+    };
+    detuneSlider3.onValueChange = [this] { 
+        audioProcessor.setDetuneAmount(2, detuneSlider3.getValue()); 
+        //detuneValueLabel3.setText(juce::String(unisonSlider1.getValue()), juce::dontSendNotification);
+    };
+
+    unison1Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "unison1", unisonSlider1);
+    detune1Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "detune1", detuneSlider1);
+    unison2Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "unison2", unisonSlider2);
+    detune2Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "detune2", detuneSlider2);
+    unison3Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "unison3", unisonSlider3);
+    detune3Attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "detune3", detuneSlider3);
+
+    unisonLabel.setText("Unison", juce::dontSendNotification); 
+    detuneLabel.setText("Detune", juce::dontSendNotification);
+    addAndMakeVisible(unisonLabel);
+    addAndMakeVisible(detuneLabel);
+
+    //unisonValueLabel1.setText("1", juce::dontSendNotification);
+    //addAndMakeVisible(unisonValueLabel1);
+
+    //detuneValueLabel1.setText("0.0", juce::dontSendNotification); 
+    //addAndMakeVisible(detuneValueLabel1);
+
+    //unisonValueLabel2.setText("1", juce::dontSendNotification); 
+    //addAndMakeVisible(unisonValueLabel2);
+
+    //detuneValueLabel2.setText("0.0", juce::dontSendNotification); 
+    //addAndMakeVisible(detuneValueLabel2);
+
+    //unisonValueLabel3.setText("1", juce::dontSendNotification); 
+    //addAndMakeVisible(unisonValueLabel3);
+
+    //detuneValueLabel3.setText("0.0", juce::dontSendNotification); 
+    //addAndMakeVisible(detuneValueLabel3);
+
 }
 
 SynthAudioProcessorEditor::~SynthAudioProcessorEditor()
@@ -178,23 +267,35 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
 
 void SynthAudioProcessorEditor::resized()
 {
-    const int buttonWidth = 100;
-    const int buttonHeight = 30;
+    const int knobSize = 50;
+    const int labelHeight = 20;
+    const int spaceBetween = 10;
 
-    waveformToggleButton.setBounds(120, 50, buttonWidth, buttonHeight);
-    waveformLabel.setBounds(120, 30, getWidth() - 20, 20);
+    unisonLabel.setBounds(140 + knobSize + spaceBetween - 20, 30, 100, 20);
+    detuneLabel.setBounds(180 + knobSize + spaceBetween - 10, 30, 100, 20);
 
-    waveformToggleButton2.setBounds(120, 70, buttonWidth, buttonHeight);
-    waveformLabel2.setBounds(120, 50, getWidth() - 20, 20);
+    waveformToggleButton.setBounds(120, 50, 100, 30);
+    waveformLabel.setBounds(120, 30, getWidth() - 20, labelHeight);
+    //unisonValueLabel1.setBounds(140 + knobSize + spaceBetween, 70, 100, 20);
+    //detuneValueLabel1.setBounds(180 + knobSize + spaceBetween, 70, 100, 20);
+    unisonSlider1.setBounds(140 + knobSize + spaceBetween, 50, knobSize, knobSize);
+    detuneSlider1.setBounds(180 + knobSize + spaceBetween, 50, knobSize, knobSize);
 
-    waveformToggleButton3.setBounds(120, 90, buttonWidth, buttonHeight);
-    waveformLabel3.setBounds(120, 70, getWidth() - 20, 20);
+    waveformToggleButton2.setBounds(120, 90, 100, 30);
+    waveformLabel2.setBounds(120, 70, getWidth() - 20, labelHeight);
+    unisonSlider2.setBounds(140 + knobSize + spaceBetween, 90, knobSize, knobSize);
+    detuneSlider2.setBounds(180 + knobSize + spaceBetween, 90, knobSize, knobSize);
+
+    waveformToggleButton3.setBounds(120, 130, 100, 30);
+    waveformLabel3.setBounds(120, 110, getWidth() - 20, labelHeight);
+    unisonSlider3.setBounds(140 + knobSize + spaceBetween, 130, knobSize, knobSize);
+    detuneSlider3.setBounds(180 + knobSize + spaceBetween, 130, knobSize, knobSize);
 
     //waveformToggleButton.setToggleState(false, juce::NotificationType::dontSendNotification);
 
     int sliderWidth = 50;
     int sliderHeight = 100;
-    int sliderStartX = 85;
+    int sliderStartX = 185;
     int sliderSpacing = 60;
 
     attackSlider.setBounds(sliderStartX, 250, sliderWidth, sliderHeight);
@@ -203,7 +304,6 @@ void SynthAudioProcessorEditor::resized()
     releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 250, sliderWidth, sliderHeight);
 
     int sliderDiameter = 50;
-    int labelHeight = 20;
     volumeSlider.setBounds(getWidth() - sliderDiameter - 18, 20, sliderDiameter, sliderDiameter);
     volumeLabel.setBounds(getWidth() - sliderDiameter - 18, 20 + sliderDiameter, sliderDiameter, labelHeight);
 

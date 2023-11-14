@@ -42,8 +42,8 @@ private:
     juce::Label waveformLabel3;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment2;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment3;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveform2Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveform3Attachment;
 
     juce::Slider attackSlider, decaySlider, sustainSlider, releaseSlider;
     juce::Label attackLabel, decayLabel, sustainLabel, releaseLabel;
@@ -60,7 +60,21 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
 
-    
+    juce::Slider unisonSlider1, unisonSlider2, unisonSlider3;
+    juce::Slider detuneSlider1, detuneSlider2, detuneSlider3;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> unison1Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> unison2Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> unison3Attachment;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> detune1Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> detune2Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> detune3Attachment;
+
+    //juce::Label unisonValueLabel1, unisonValueLabel2, unisonValueLabel3;
+    //juce::Label detuneValueLabel1, detuneValueLabel2, detuneValueLabel3;
+    juce::Label unisonLabel;
+    juce::Label detuneLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthAudioProcessorEditor)
 };
