@@ -92,6 +92,8 @@ public:
     }
 
     void SynthAudioProcessor::setUnisonCount(int oscillatorIndex, int unisonCount) {
+        const juce::ScopedLock sl();
+
         for (auto& voice : voices) {
             voice.oscillators[oscillatorIndex].unison = unisonCount;
         }

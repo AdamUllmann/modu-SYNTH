@@ -215,6 +215,9 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
                 for (int i = 0; i < 3; i++) {
                     for (int u = 0; u < voiceToUse->oscillators[i].unison; ++u) {
                         voiceToUse->oscillators[i].oscillator[u].reset();
+                        float randomPhase = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * juce::MathConstants<float>::twoPi;
+                        voiceToUse->oscillators[i].oscillator[u].setPhase(randomPhase);
+
                         float detune = (u - (voiceToUse->oscillators[i].unison / 2)) * voiceToUse->oscillators[i].detune;
                         voiceToUse->oscillators[i].oscillator[u].setFrequency(frequency + detune);
                     }
@@ -243,6 +246,7 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
             tempBuffer.clear();
 
             juce::dsp::AudioBlock<float> voiceBlock(tempBuffer);
+
             for (int i = 0; i < 3; i++) {
                 for (int u = 0; u < voice.oscillators[i].unison; ++u) {
                     voice.oscillators[i].oscillator[u].process(juce::dsp::ProcessContextReplacing<float>(voiceBlock));

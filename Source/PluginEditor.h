@@ -27,18 +27,19 @@ public:
 
     void sliderValueChanged(juce::Slider* slider);
     juce::String SynthAudioProcessorEditor::getWaveformName(int waveformValue);
+    
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     SynthAudioProcessor& audioProcessor;
-    juce::ToggleButton waveformToggleButton;
+    juce::TextButton waveformToggleButton;
     juce::Label waveformLabel;
     
-    juce::ToggleButton waveformToggleButton2;
+    juce::TextButton waveformToggleButton2;
     juce::Label waveformLabel2;
 
-    juce::ToggleButton waveformToggleButton3;
+    juce::TextButton waveformToggleButton3;
     juce::Label waveformLabel3;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> waveformAttachment;

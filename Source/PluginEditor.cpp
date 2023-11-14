@@ -148,7 +148,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 
     unisonSlider1.setRange(1, 16, 1);
     unisonSlider1.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    unisonSlider1.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 15, 15);
+    unisonSlider1.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 25, 15);
     addAndMakeVisible(unisonSlider1);
 
     detuneSlider1.setRange(0.0, 5.0, 0.01);
@@ -158,7 +158,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 
     unisonSlider2.setRange(1, 16, 1);
     unisonSlider2.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    unisonSlider2.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 15, 15);
+    unisonSlider2.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 25, 15);
     addAndMakeVisible(unisonSlider2);
 
     detuneSlider2.setRange(0.0, 5.0, 0.01);
@@ -168,7 +168,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 
     unisonSlider3.setRange(1, 16, 1);
     unisonSlider3.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    unisonSlider3.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 15, 15);
+    unisonSlider3.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 25, 15);
     addAndMakeVisible(unisonSlider3);
 
     detuneSlider3.setRange(0.0, 5.0, 0.01);
@@ -247,7 +247,7 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(juce::Colours::white);
     g.setFont(30.0f);
 
-    juce::Font modernFont("Sans-Sarif", 30.0f, juce::Font::bold);
+    juce::Font modernFont("Sans-Sarif", 45.0f, juce::Font::bold);
     g.setFont(modernFont);
 
     juce::Rectangle<int> bounds = getLocalBounds();
@@ -261,35 +261,36 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     juce::Rectangle<float> roundedRect = bounds.toFloat().reduced(20.0f);
     g.drawRoundedRectangle(roundedRect, 15.0f, 2.0f);
 
+    juce::Rectangle<int> title = { 600, 550 };
     g.setColour(juce::Colours::white);
-    g.drawText("Modu-SYNTH", bounds, juce::Justification::centred, true);
+    g.drawText("Modu-SYNTH", title, juce::Justification::centred, true);
 }
 
 void SynthAudioProcessorEditor::resized()
 {
-    const int knobSize = 50;
+    const int knobSize = 60;
     const int labelHeight = 20;
-    const int spaceBetween = 10;
+    const int spaceBetween = 30;
 
-    unisonLabel.setBounds(140 + knobSize + spaceBetween - 20, 30, 100, 20);
-    detuneLabel.setBounds(180 + knobSize + spaceBetween - 10, 30, 100, 20);
+    unisonLabel.setBounds(140 + knobSize + spaceBetween + 35, 30, 100, 20);
+    detuneLabel.setBounds(180 + knobSize + spaceBetween + 55, 30, 100, 20);
 
-    waveformToggleButton.setBounds(120, 50, 100, 30);
-    waveformLabel.setBounds(120, 30, getWidth() - 20, labelHeight);
+    waveformToggleButton.setBounds(150, 60, 100, 30);
+    waveformLabel.setBounds(150, 30, getWidth() - 20, labelHeight);
     //unisonValueLabel1.setBounds(140 + knobSize + spaceBetween, 70, 100, 20);
     //detuneValueLabel1.setBounds(180 + knobSize + spaceBetween, 70, 100, 20);
-    unisonSlider1.setBounds(140 + knobSize + spaceBetween, 50, knobSize, knobSize);
-    detuneSlider1.setBounds(180 + knobSize + spaceBetween, 50, knobSize, knobSize);
+    unisonSlider1.setBounds(160 + knobSize + spaceBetween + 10, 50, knobSize, knobSize);
+    detuneSlider1.setBounds(200 + knobSize + spaceBetween + 30, 50, knobSize, knobSize);
 
-    waveformToggleButton2.setBounds(120, 90, 100, 30);
-    waveformLabel2.setBounds(120, 70, getWidth() - 20, labelHeight);
-    unisonSlider2.setBounds(140 + knobSize + spaceBetween, 90, knobSize, knobSize);
-    detuneSlider2.setBounds(180 + knobSize + spaceBetween, 90, knobSize, knobSize);
+    waveformToggleButton2.setBounds(150, 120, 100, 30);
+    waveformLabel2.setBounds(150, 70, getWidth() - 20, labelHeight);
+    unisonSlider2.setBounds(160 + knobSize + spaceBetween + 10, 110, knobSize, knobSize);
+    detuneSlider2.setBounds(200 + knobSize + spaceBetween + 30, 110, knobSize, knobSize);
 
-    waveformToggleButton3.setBounds(120, 130, 100, 30);
-    waveformLabel3.setBounds(120, 110, getWidth() - 20, labelHeight);
-    unisonSlider3.setBounds(140 + knobSize + spaceBetween, 130, knobSize, knobSize);
-    detuneSlider3.setBounds(180 + knobSize + spaceBetween, 130, knobSize, knobSize);
+    waveformToggleButton3.setBounds(150, 180, 100, 30);
+    waveformLabel3.setBounds(150, 110, getWidth() - 20, labelHeight);
+    unisonSlider3.setBounds(160 + knobSize + spaceBetween + 10, 170, knobSize, knobSize);
+    detuneSlider3.setBounds(200 + knobSize + spaceBetween + 30, 170, knobSize, knobSize);
 
     //waveformToggleButton.setToggleState(false, juce::NotificationType::dontSendNotification);
 
@@ -298,10 +299,10 @@ void SynthAudioProcessorEditor::resized()
     int sliderStartX = 185;
     int sliderSpacing = 60;
 
-    attackSlider.setBounds(sliderStartX, 250, sliderWidth, sliderHeight);
-    decaySlider.setBounds(sliderStartX + sliderSpacing, 250, sliderWidth, sliderHeight);
-    sustainSlider.setBounds(sliderStartX + 2 * sliderSpacing, 250, sliderWidth, sliderHeight);
-    releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 250, sliderWidth, sliderHeight);
+    attackSlider.setBounds(sliderStartX, 350, sliderWidth, sliderHeight);
+    decaySlider.setBounds(sliderStartX + sliderSpacing, 350, sliderWidth, sliderHeight);
+    sustainSlider.setBounds(sliderStartX + 2 * sliderSpacing, 350, sliderWidth, sliderHeight);
+    releaseSlider.setBounds(sliderStartX + 3 * sliderSpacing, 350, sliderWidth, sliderHeight);
 
     int sliderDiameter = 50;
     volumeSlider.setBounds(getWidth() - sliderDiameter - 18, 20, sliderDiameter, sliderDiameter);
@@ -341,3 +342,4 @@ void SynthAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
         audioProcessor.setReleaseTime(releaseSlider.getValue());
     }
 }
+
