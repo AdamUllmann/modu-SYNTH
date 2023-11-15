@@ -2,7 +2,7 @@
 
 This is a standalone and VST synthesizer developed using the JUCE framework. The synthesizer is capable of producing various waveforms, including sine, sawtooth, square, and noise.
 
-![Synth Interface](https://github.com/AdamUllmann/images-for-repos/blob/def66d4b057f7c38daefe5e6a752a6f2d4fc9c01/modu-synth.png)
+![Synth Interface](https://github.com/AdamUllmann/images-for-repos/blob/29faa48a9fd84deda573988380501ccbddcebd04/modu-synth%20(0.3.0)%20.png)
 
 ## Table of Contents
 - [Getting Started](#getting-started)
