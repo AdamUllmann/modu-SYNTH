@@ -11,7 +11,7 @@ This is a standalone and VST synthesizer developed using the JUCE framework. The
 
 ## Getting Started
 
-To use and build the synthesizer, you'll need to have JUCE installed and set up. Please follow the JUCE installation instructions to get started.
+To build the synthesizer, you'll need to have JUCE installed and set up. Please follow the JUCE installation instructions to get started.
 
 ## Features
 
