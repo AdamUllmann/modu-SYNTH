@@ -19,7 +19,7 @@ The synthesizer has the following features:
 
 - Support for standalone and VST plugin formats.
 - Four selectable waveforms: sine, sawtooth, square, and noise.
-- Polyphonic support with a maximum of 16 voices.
+- Polyphonic support with a maximum of 64 voices.
 - Real-time audio processing with low-latency.
 
 ## License
