@@ -212,9 +212,18 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
                 voiceToUse->activationOrder = nextActivationOrder++;
                 voiceToUse->noteNumber = noteNumber;
                 voiceToUse->isActive = true;
+
+                float osc1Tune = *parameters.getRawParameterValue("osc1Tune");
+                float osc2Tune = *parameters.getRawParameterValue("osc2Tune");
+                float osc3Tune = *parameters.getRawParameterValue("osc3Tune");
+
                 for (int i = 0; i < 3; i++) {
                     for (int u = 0; u < voiceToUse->oscillators[i].unison; ++u) {
                         voiceToUse->oscillators[i].oscillator[u].reset();
+
+                     //   float tune = (i == 0) ? osc1Tune : (i == 1) ? osc2Tune : osc3Tune;
+                     //   float tunedFrequency = frequency * tune;
+
                         if (voiceToUse->oscillators[i].unison != 1) {
                             float randomPhase = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * juce::MathConstants<float>::twoPi;
                             voiceToUse->oscillators[i].oscillator[u].setPhase(randomPhase);
@@ -251,6 +260,7 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
             float osc1Volume = *parameters.getRawParameterValue("osc1Volume");
             float osc2Volume = *parameters.getRawParameterValue("osc2Volume");
             float osc3Volume = *parameters.getRawParameterValue("osc3Volume");
+
 
             juce::AudioBuffer<float> oscBuffers[3];
 
@@ -368,13 +378,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthAudioProcessor::createP
     params.push_back(std::make_unique<juce::AudioParameterChoice>("osc3Waveform", "Oscillator 3 Waveform", waveformChoices, 0));
 
     for (int i = 1; i <= 3; ++i) {
-        params.push_back(std::make_unique<juce::AudioParameterInt>("unison" + std::to_string(i), "Unison " + std::to_string(i), 1, 16, 5));
-        params.push_back(std::make_unique<juce::AudioParameterFloat>("detune" + std::to_string(i), "Detune " + std::to_string(i), 0.0f, 5.0f, 0.2f));
+        params.push_back(std::make_unique<juce::AudioParameterInt>("unison" + std::to_string(i), "Unison " + std::to_string(i), 1, 16, 1));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>("detune" + std::to_string(i), "Detune " + std::to_string(i), 0.0f, 5.0f, 0.0f));
     }
 
     params.push_back(std::make_unique<juce::AudioParameterFloat>("osc1Volume", "Oscillator 1 Volume", 0.0f, 1.0f, 0.7f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc2Volume", "Oscillator 2 Volume", 0.0f, 1.0f, 0.7f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc3Volume", "Oscillator 3 Volume", 0.0f, 1.0f, 0.7f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc2Volume", "Oscillator 2 Volume", 0.0f, 1.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc3Volume", "Oscillator 3 Volume", 0.0f, 1.0f, 0.0f));
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc1Tune", "Oscillator 1 Tune", 0.5f, 2.0f, 1.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc2Tune", "Oscillator 2 Tune", 0.5f, 2.0f, 1.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("osc3Tune", "Oscillator 3 Tune", 0.5f, 2.0f, 1.0f));
 
     return { params.begin(), params.end() };
 }
